@@ -35,3 +35,82 @@ if (hero && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     hills.style.transform = "";
   });
 }
+
+
+// Drag the bicycle around the hero. On release it springs back to its home spot,
+// as if pulled by a soft elastic gravity.
+(() => {
+  const bike = document.getElementById("draggableBike");
+  if (!bike) return;
+  let x = 0, y = 0, vx = 0, vy = 0;
+  let dragging = false, pointerId = null, lastX = 0, lastY = 0, lastTime = 0;
+  let frame = 0, startX = 0, startY = 0;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function paint() {
+    bike.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${Math.max(-9, Math.min(9, x * .025))}deg)`;
+  }
+  function animate() {
+    if (dragging) return;
+    const stiffness = reduceMotion ? .22 : .105;
+    const damping = reduceMotion ? .5 : .82;
+    vx += -x * stiffness;
+    vy += -y * stiffness;
+    vx *= damping;
+    vy *= damping;
+    x += vx;
+    y += vy;
+    paint();
+    if (Math.abs(x) + Math.abs(y) + Math.abs(vx) + Math.abs(vy) > .35) {
+      frame = requestAnimationFrame(animate);
+    } else {
+      x = 0; y = 0; vx = 0; vy = 0;
+      paint();
+      frame = 0;
+    }
+  }
+  function stopAnimation() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+  }
+  bike.addEventListener("pointerdown", event => {
+    if (event.button !== 0 && event.pointerType === "mouse") return;
+    stopAnimation();
+    dragging = true;
+    pointerId = event.pointerId;
+    bike.classList.add("dragging");
+    bike.setPointerCapture(pointerId);
+    lastX = event.clientX;
+    lastY = event.clientY;
+    lastTime = performance.now();
+    event.preventDefault();
+  });
+  bike.addEventListener("pointermove", event => {
+    if (!dragging || event.pointerId !== pointerId) return;
+    const now = performance.now();
+    const dt = Math.max(8, now - lastTime);
+    const dx = event.clientX - lastX;
+    const dy = event.clientY - lastY;
+    x += dx; y += dy;
+    vx = dx / dt * 16;
+    vy = dy / dt * 16;
+    lastX = event.clientX; lastY = event.clientY; lastTime = now;
+    paint();
+  });
+  function release(event) {
+    if (!dragging || (event && event.pointerId !== pointerId)) return;
+    dragging = false;
+    pointerId = null;
+    bike.classList.remove("dragging");
+    if (!frame) frame = requestAnimationFrame(animate);
+  }
+  bike.addEventListener("pointerup", release);
+  bike.addEventListener("pointercancel", release);
+  bike.addEventListener("lostpointercapture", release);
+  bike.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (!frame) frame = requestAnimationFrame(animate);
+    }
+  });
+})();
