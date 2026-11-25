@@ -1,15 +1,19 @@
-DEMOCRAZY website starter
+DEMOCRAZY website
 
-Open index.html in a browser, or upload the complete folder to any static web host.
-Keep the assets folder alongside index.html, style.css and script.js.
+This is a multi-page static website. Open index.html to start.
 
-Before publishing, replace the sample/placeholder copy with confirmed fest information:
-- year and dates
-- institution / venue and contact details
-- official event list and rules
-- schedule, registration URL and result publication method
-- official social links and sponsors
+Pages:
+- index.html (Home)
+- about.html (The idea)
+- events.html (Events)
+- schedule.html (Schedule)
+- updates.html (Updates)
+- gallery.html (Gallery)
+- results.html (Results)
 
-The design is based on the uploaded SIBAQ site's full-screen hero, illustrated layered landscape,
-minimal top navigation, full-screen menu, section-led page structure and restrained footer.
-This is a fresh DEMOCRAZY implementation, not a copy of the original site's compiled application.
+Each menu item opens its own page. Each page has its own vertical content and scroll.
+Keep all HTML files, style.css, script.js and the assets folder together.
+
+Before publishing, replace placeholders with confirmed fest details, including dates, venue,
+official event names/rules, schedule, registration URL, results, contact details and social links.
+The event categories and schedule copy are currently illustrative, not official information.
